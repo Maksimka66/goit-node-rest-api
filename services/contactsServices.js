@@ -1,8 +1,15 @@
+import * as fs from "node:fs/promises";
+import path from "node:path";
+import crypto from "node:crypto";
+
+const contactsPath = path.resolve("db", "contacts.json");
+
 export async function listContacts() {
   try {
     const data = await fs.readFile(contactsPath, {
       encoding: "utf-8",
     });
+
     return JSON.parse(data);
   } catch (error) {
     throw error;

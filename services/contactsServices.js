@@ -40,16 +40,20 @@ export async function getContactById(contactId) {
 }
 
 export async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const removedContactIndex = contacts.findIndex(
-    (contact) => contact.id === contactId
-  );
+  try {
+    const contacts = await listContacts();
+    const removedContactIndex = contacts.findIndex(
+      (contact) => contact.id === contactId
+    );
 
-  const newList = contacts.filter((contact) => contact.id !== contactId);
+    const newList = contacts.filter((contact) => contact.id !== contactId);
 
-  await writeContacts(newList);
+    await writeContacts(newList);
 
-  return removedContactIndex !== -1 ? contacts[removedContactIndex] : null;
+    return removedContactIndex !== -1 ? contacts[removedContactIndex] : null;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function addContact(name, email, phone) {
@@ -60,3 +64,5 @@ export async function addContact(name, email, phone) {
 
   return newContact;
 }
+
+export async function updateContact() {}

@@ -1,6 +1,7 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
+import HttpError from "../helpers/HttpError.js";
 
 const contactsPath = path.resolve("db", "contacts.json");
 
@@ -12,7 +13,7 @@ export async function listContacts() {
 
     return JSON.parse(data);
   } catch (error) {
-    throw error;
+    return error;
   }
 }
 
@@ -29,29 +30,54 @@ async function writeContacts(contacts) {
 }
 
 export async function getContactById(contactId) {
-  const contacts = await listContacts();
-  const markedContact = contacts.find((contact) => contact.id === contactId);
-  return markedContact ? markedContact : null;
+  try {
+    const contacts = await listContacts();
+    const markedContact = contacts.find((contact) => contact.id === contactId);
+    return markedContact ? markedContact : null;
+  } catch (error) {
+    return error;
+  }
 }
 
 export async function removeContact(contactId) {
-  const contacts = await listContacts();
-  const removedContactIndex = contacts.findIndex(
-    (contact) => contact.id === contactId
-  );
+  try {
+    const contacts = await listContacts();
+    const removedContactIndex = contacts.findIndex(
+      (contact) => contact.id === contactId
+    );
 
-  const newList = contacts.filter((contact) => contact.id !== contactId);
+    const newList = contacts.filter((contact) => contact.id !== contactId);
 
-  await writeContacts(newList);
+    await writeContacts(newList);
 
-  return removedContactIndex !== -1 ? contacts[removedContactIndex] : null;
+    return removedContactIndex !== -1 ? contacts[removedContactIndex] : null;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function addContact(name, email, phone) {
-  const contacts = await listContacts();
-  const newContact = { id: crypto.randomUUID(), name, email, phone };
+  try {
+    const contacts = await listContacts();
+    const newContact = { id: crypto.randomUUID(), name, email, phone };
 
-  await writeContacts([...contacts, newContact]);
+    await writeContacts([...contacts, newContact]);
 
-  return newContact;
+    return newContact;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function updateContact(id, data) {
+  try {
+    const contacts = await listContacts();
+    const updatedContact = contacts.find((contact) => contact.id === id);
+    for (const key in updatedContact) {
+      updatedContact[key] = data[key];
+    }
+    return updatedContact;
+  } catch (error) {
+    return null;
+  }
 }

@@ -7,14 +7,15 @@ import {
   removeContact,
   updateContact,
 } from "../services/contactsServices.js";
+
 import validateBody from "../helpers/validateBody.js";
+
 import {
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
-import HttpError from "../helpers/HttpError.js";
 
-const jsonParser = express.json();
+import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res) => {
   const allContacts = await listContacts();
@@ -57,7 +58,7 @@ export const createContact = async (req, res, next) => {
 
   try {
     if (validateBody(createContactSchema)) {
-      return;
+      throw HttpError(400);
     }
     const newContact = await addContact(name, email, phone);
     res.status(201).send(newContact);
@@ -66,8 +67,8 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-export const updateContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
+export const changeContact = async (req, res, next) => {
+  const { id, name, email, phone } = req.body;
 
   try {
     if (Object.keys({ name, email, phone }).length === 0) {
@@ -76,9 +77,9 @@ export const updateContact = async (req, res, next) => {
       });
     }
     if (validateBody(updateContactSchema)) {
-      return;
+      throw HttpError(400);
     }
-    const updatedContact = await updateContact({ name, email, phone });
+    const updatedContact = await updateContact(id, { name, email, phone });
     if (!updatedContact) {
       throw HttpError(404);
     }

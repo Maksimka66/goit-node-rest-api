@@ -35,7 +35,7 @@ export async function getContactById(contactId) {
     const markedContact = contacts.find((contact) => contact.id === contactId);
     return markedContact ? markedContact : null;
   } catch (error) {
-    return error;
+    return null;
   }
 }
 

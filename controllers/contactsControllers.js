@@ -55,11 +55,13 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   const { name, email, phone } = req.body;
+  console.log(req.body);
 
   try {
     if (validateBody(createContactSchema)) {
       throw HttpError(400);
     }
+
     const newContact = await addContact(name, email, phone);
     res.status(201).send(newContact);
   } catch (error) {

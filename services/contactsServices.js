@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
-import HttpError from "../helpers/HttpError.js";
 
 const contactsPath = path.resolve("db", "contacts.json");
 

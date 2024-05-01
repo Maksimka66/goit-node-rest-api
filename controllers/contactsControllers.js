@@ -77,14 +77,20 @@ export const changeContact = async (req, res, next) => {
       return HttpError(400).json({
         message: "Body must have at least one field",
       });
-    }
-    if (validateBody(updateContactSchema)) {
+    } else if (validateBody(updateContactSchema)) {
       throw HttpError(400);
     }
-    const updatedContact = await updateContact(id, { name, email, phone });
+
+    const updatedContact = await updateContact(id, {
+      name,
+      email,
+      phone,
+    });
+
     if (!updatedContact) {
       throw HttpError(404);
     }
+
     res.status(200).send(updatedContact);
   } catch (error) {
     next(error);

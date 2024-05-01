@@ -57,12 +57,27 @@ export async function removeContact(contactId) {
 }
 
 export async function addContact(name, email, phone) {
-  const contacts = await listContacts();
-  const newContact = { id: crypto.randomUUID(), name, email, phone };
+  try {
+    const contacts = await listContacts();
+    const newContact = { id: crypto.randomUUID(), name, email, phone };
 
-  await writeContacts([...contacts, newContact]);
+    await writeContacts([...contacts, newContact]);
 
-  return newContact;
+    return newContact;
+  } catch (error) {
+    return null;
+  }
 }
 
-export async function updateContact() {}
+export async function updateContact(id, data) {
+  try {
+    const contacts = await listContacts();
+    const updatedContact = contacts.find((contact) => contact.id === id);
+    for (const key in updatedContact) {
+      updatedContact[key] = data[key];
+    }
+    return updatedContact;
+  } catch (error) {
+    return null;
+  }
+}

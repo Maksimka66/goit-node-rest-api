@@ -55,13 +55,8 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   const { name, email, phone } = req.body;
-  console.log(req.body);
 
   try {
-    if (validateBody(createContactSchema)) {
-      throw HttpError(400);
-    }
-
     const newContact = await addContact(name, email, phone);
     res.status(201).send(newContact);
   } catch (error) {
@@ -70,17 +65,10 @@ export const createContact = async (req, res, next) => {
 };
 
 export const changeContact = async (req, res, next) => {
-  const { id, name, email, phone } = req.body;
+  const { name, email, phone } = req.body;
+  const { id } = req.params;
 
   try {
-    if (Object.keys({ name, email, phone }).length === 0) {
-      return HttpError(400).json({
-        message: "Body must have at least one field",
-      });
-    } else if (validateBody(updateContactSchema)) {
-      throw HttpError(400);
-    }
-
     const updatedContact = await updateContact(id, {
       name,
       email,

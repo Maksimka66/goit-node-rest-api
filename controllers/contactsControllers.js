@@ -65,15 +65,10 @@ export const createContact = async (req, res, next) => {
 };
 
 export const changeContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
   const { id } = req.params;
 
   try {
-    const updatedContact = await updateContact(id, {
-      name,
-      email,
-      phone,
-    });
+    const updatedContact = await updateContact(id, req.body);
 
     if (!updatedContact) {
       throw HttpError(404);

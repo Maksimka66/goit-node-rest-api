@@ -77,6 +77,7 @@ export async function updateContact(id, data) {
     const updatedContact = { ...contacts[index], ...data };
 
     contacts[index] = updatedContact;
+
     await writeContacts(contacts);
 
     return updatedContact;

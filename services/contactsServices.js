@@ -1,7 +1,6 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
-import HttpError from "../helpers/HttpError.js";
 
 const contactsPath = path.resolve("db", "contacts.json");
 
@@ -35,7 +34,7 @@ export async function getContactById(contactId) {
     const markedContact = contacts.find((contact) => contact.id === contactId);
     return markedContact ? markedContact : null;
   } catch (error) {
-    return error;
+    return null;
   }
 }
 
@@ -72,10 +71,19 @@ export async function addContact(name, email, phone) {
 export async function updateContact(id, data) {
   try {
     const contacts = await listContacts();
-    const updatedContact = contacts.find((contact) => contact.id === id);
-    for (const key in updatedContact) {
-      updatedContact[key] = data[key];
+
+    const index = contacts.findIndex((contact) => contact.id === id);
+
+    if (index === -1) {
+      return null;
     }
+
+    const updatedContact = { ...contacts[index], ...data };
+
+    contacts[index] = updatedContact;
+
+    await writeContacts(contacts);
+
     return updatedContact;
   } catch (error) {
     return null;

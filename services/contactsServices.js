@@ -74,13 +74,17 @@ export async function updateContact(id, data) {
 
     const index = contacts.findIndex((contact) => contact.id === id);
 
+    if (index === -1) {
+      return null;
+    }
+
     const updatedContact = { ...contacts[index], ...data };
 
     contacts[index] = updatedContact;
 
     await writeContacts(contacts);
 
-    return index !== -1 ? updatedContact : null;
+    return updatedContact;
   } catch (error) {
     return null;
   }

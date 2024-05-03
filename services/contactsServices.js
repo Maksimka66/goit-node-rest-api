@@ -80,7 +80,7 @@ export async function updateContact(id, data) {
 
     await writeContacts(contacts);
 
-    return updatedContact;
+    return index !== -1 ? updatedContact : null;
   } catch (error) {
     return null;
   }

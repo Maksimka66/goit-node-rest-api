@@ -1,9 +1,9 @@
 import * as fs from "node:fs/promises";
-import path from "node:path";
+// import path from "node:path";
 import crypto from "node:crypto";
-import HttpError from "../helpers/HttpError.js";
+import "dotenv/config";
 
-const contactsPath = path.resolve("db", "contacts.json");
+// const contactsPath = path.resolve("db", "contacts.json");
 
 export async function listContacts() {
   try {
@@ -81,3 +81,5 @@ export async function updateContact(id, data) {
     return null;
   }
 }
+
+export async function updateStatusContact(contactId, body) {}

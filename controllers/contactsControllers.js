@@ -1,5 +1,5 @@
 import express from "express";
-import { json } from "express";
+import mongoose from "mongoose";
 import {
   addContact,
   getContactById,
@@ -13,8 +13,6 @@ import {
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
 import HttpError from "../helpers/HttpError.js";
-
-const jsonParser = express.json();
 
 export const getAllContacts = async (req, res) => {
   const allContacts = await listContacts();
@@ -66,7 +64,7 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-export const updateContact = async (req, res, next) => {
+export const changeContact = async (req, res, next) => {
   const { name, email, phone } = req.body;
 
   try {
@@ -87,3 +85,5 @@ export const updateContact = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateStatus = async (req, res, next) => {};

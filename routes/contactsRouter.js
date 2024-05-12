@@ -1,13 +1,16 @@
 import express from "express";
+
 import {
   getAllContacts,
   getOneContact,
   deleteContact,
   createContact,
-  updateContact,
+  changeContact,
+  updateStatus,
 } from "../controllers/contactsControllers.js";
 
 const contactsRouter = express.Router();
+const parser = express.json();
 
 contactsRouter.get("/", getAllContacts);
 
@@ -15,8 +18,10 @@ contactsRouter.get("/:id", getOneContact);
 
 contactsRouter.delete("/:id", deleteContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.post("/", parser, createContact);
 
-contactsRouter.put("/:id", updateContact);
+contactsRouter.put("/:id", parser, changeContact);
+
+contactsRouter.patch("/:id", updateStatus);
 
 export default contactsRouter;

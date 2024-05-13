@@ -1,21 +1,13 @@
-import express from "express";
-import mongoose from "mongoose";
-import {
-  addContact,
-  getContactById,
-  listContacts,
-  removeContact,
-  updateContact,
-} from "../services/contactsServices.js";
 import validateBody from "../helpers/validateBody.js";
 import {
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
 import HttpError from "../helpers/HttpError.js";
+import Contact from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
-  const allContacts = await listContacts();
+  const allContacts = await Contact.find();
 
   res.status(200).send(allContacts);
 };
@@ -23,9 +15,9 @@ export const getAllContacts = async (req, res) => {
 export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const definiteContact = await getContactById(id);
+    const definiteContact = await Contact.findById(id);
 
-    if (!definiteContact) {
+    if (definiteContact === null) {
       throw HttpError(404);
     }
 
@@ -38,9 +30,9 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const deletedContact = await removeContact(id);
+    const deletedContact = await Contact.findByIdAndDelete(id);
 
-    if (!deletedContact) {
+    if (deletedContact === null) {
       throw HttpError(404);
     }
 
@@ -57,8 +49,9 @@ export const createContact = async (req, res, next) => {
     if (validateBody(createContactSchema)) {
       return;
     }
-    const newContact = await addContact(name, email, phone);
-    res.status(201).send(newContact);
+
+    const addNewContact = await Contact.create({ name, email, phone });
+    res.status(201).send(addNewContact);
   } catch (error) {
     next(error);
   }
@@ -66,6 +59,7 @@ export const createContact = async (req, res, next) => {
 
 export const changeContact = async (req, res, next) => {
   const { name, email, phone } = req.body;
+  const { id } = req.params;
 
   try {
     if (Object.keys({ name, email, phone }).length === 0) {
@@ -73,13 +67,25 @@ export const changeContact = async (req, res, next) => {
         message: "Body must have at least one field",
       });
     }
+
     if (validateBody(updateContactSchema)) {
       return;
     }
-    const updatedContact = await updateContact({ name, email, phone });
-    if (!updatedContact) {
+
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        phone,
+      },
+      { new: true }
+    );
+
+    if (updatedContact === null) {
       throw HttpError(404);
     }
+
     res.status(200).send(updatedContact);
   } catch (error) {
     next(error);

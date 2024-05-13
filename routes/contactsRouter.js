@@ -10,7 +10,6 @@ import {
 } from "../controllers/contactsControllers.js";
 
 const contactsRouter = express.Router();
-const parser = express.json();
 
 contactsRouter.get("/", getAllContacts);
 
@@ -18,9 +17,9 @@ contactsRouter.get("/:id", getOneContact);
 
 contactsRouter.delete("/:id", deleteContact);
 
-contactsRouter.post("/", parser, createContact);
+contactsRouter.post("/", createContact);
 
-contactsRouter.put("/:id", parser, changeContact);
+contactsRouter.put("/:id", changeContact);
 
 contactsRouter.patch("/:id", updateStatus);
 

@@ -43,14 +43,19 @@ export const deleteContact = async (req, res, next) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, favorite } = req.body;
 
   try {
     if (validateBody(createContactSchema)) {
       return;
     }
 
-    const addNewContact = await Contact.create({ name, email, phone });
+    const addNewContact = await Contact.create({
+      name,
+      email,
+      phone,
+      favorite,
+    });
     res.status(201).send(addNewContact);
   } catch (error) {
     next(error);
@@ -58,11 +63,11 @@ export const createContact = async (req, res, next) => {
 };
 
 export const changeContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, favorite } = req.body;
   const { id } = req.params;
 
   try {
-    if (Object.keys({ name, email, phone }).length === 0) {
+    if (Object.keys({ name, email, phone, favorite }).length === 0) {
       return HttpError(400).json({
         message: "Body must have at least one field",
       });
@@ -78,6 +83,7 @@ export const changeContact = async (req, res, next) => {
         name,
         email,
         phone,
+        favorite,
       },
       { new: true }
     );

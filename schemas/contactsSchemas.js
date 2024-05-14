@@ -30,4 +30,6 @@ export const updateContactSchema = Joi.object({
   phone: Joi.number(),
 });
 
+export const changeContactSchema = Joi.object({ favorite: Joi.boolean() });
+
 export default mongoose.model("Contact", contactSchema);

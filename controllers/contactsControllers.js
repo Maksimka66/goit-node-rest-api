@@ -1,5 +1,6 @@
 import validateBody from "../helpers/validateBody.js";
 import {
+  changeContactSchema,
   createContactSchema,
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
@@ -98,4 +99,27 @@ export const changeContact = async (req, res, next) => {
   }
 };
 
-export const updateStatus = async (req, res, next) => {};
+export const updateStatusContact = async (req, res, next) => {
+  const { favorite } = req.body;
+  const { id } = req.params;
+
+  try {
+    if (validateBody(changeContactSchema)) {
+      return;
+    }
+
+    const changedFavorite = await Contact.findByIdAndUpdate(
+      id,
+      { favorite },
+      { new: true }
+    );
+
+    if (changedFavorite === null) {
+      throw HttpError(404);
+    }
+
+    res.status(200).send(changedFavorite);
+  } catch (error) {
+    next(error);
+  }
+};

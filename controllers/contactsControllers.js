@@ -47,16 +47,17 @@ export const createContact = async (req, res, next) => {
   const { name, email, phone, favorite } = req.body;
 
   try {
-    if (validateBody(createContactSchema)) {
-      return;
-    }
-
     const addNewContact = await Contact.create({
       name,
       email,
       phone,
       favorite,
     });
+
+    if (Object.keys({ name, email, phone, favorite }).length !== 4) {
+      throw validateBody(createContactSchema);
+    }
+
     res.status(201).send(addNewContact);
   } catch (error) {
     next(error);

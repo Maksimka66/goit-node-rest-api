@@ -1,9 +1,3 @@
-import validateBody from "../helpers/validateBody.js";
-import {
-  changeContactSchema,
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
 import HttpError from "../helpers/HttpError.js";
 import Contact from "../schemas/contactsSchemas.js";
 
@@ -54,10 +48,6 @@ export const createContact = async (req, res, next) => {
       favorite,
     });
 
-    if (Object.keys({ name, email, phone, favorite }).length !== 4) {
-      throw validateBody(createContactSchema);
-    }
-
     res.status(201).send(addNewContact);
   } catch (error) {
     next(error);
@@ -69,14 +59,10 @@ export const changeContact = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    if (Object.keys({ name, email, phone, favorite }).length === 0) {
-      return HttpError(400).json({
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({
         message: "Body must have at least one field",
       });
-    }
-
-    if (validateBody(updateContactSchema)) {
-      return;
     }
 
     const updatedContact = await Contact.findByIdAndUpdate(
@@ -105,10 +91,6 @@ export const updateStatusContact = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    if (validateBody(changeContactSchema)) {
-      return;
-    }
-
     const changedFavorite = await Contact.findByIdAndUpdate(
       id,
       { favorite },

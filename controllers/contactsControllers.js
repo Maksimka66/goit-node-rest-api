@@ -1,24 +1,8 @@
-import express from "express";
-import { json } from "express";
-import {
-  addContact,
-  getContactById,
-  listContacts,
-  removeContact,
-  updateContact,
-} from "../services/contactsServices.js";
-
-import validateBody from "../helpers/validateBody.js";
-
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
-
 import HttpError from "../helpers/HttpError.js";
+import Contact from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
-  const allContacts = await listContacts();
+  const allContacts = await Contact.find();
 
   res.status(200).send(allContacts);
 };
@@ -26,9 +10,9 @@ export const getAllContacts = async (req, res) => {
 export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const definiteContact = await getContactById(id);
+    const definiteContact = await Contact.findById(id);
 
-    if (!definiteContact) {
+    if (definiteContact === null) {
       throw HttpError(404);
     }
 
@@ -41,9 +25,9 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const deletedContact = await removeContact(id);
+    const deletedContact = await Contact.findByIdAndDelete(id);
 
-    if (!deletedContact) {
+    if (deletedContact === null) {
       throw HttpError(404);
     }
 
@@ -54,27 +38,70 @@ export const deleteContact = async (req, res, next) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const { name, email, phone } = req.body;
+  const { name, email, phone, favorite } = req.body;
 
   try {
-    const newContact = await addContact(name, email, phone);
-    res.status(201).send(newContact);
+    const addNewContact = await Contact.create({
+      name,
+      email,
+      phone,
+      favorite,
+    });
+
+    res.status(201).send(addNewContact);
   } catch (error) {
     next(error);
   }
 };
 
 export const changeContact = async (req, res, next) => {
+  const { name, email, phone, favorite } = req.body;
   const { id } = req.params;
 
   try {
-    const updatedContact = await updateContact(id, req.body);
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        message: "Body must have at least one field",
+      });
+    }
 
-    if (!updatedContact) {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        phone,
+        favorite,
+      },
+      { new: true }
+    );
+
+    if (updatedContact === null) {
       throw HttpError(404);
     }
 
     res.status(200).send(updatedContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  const { favorite } = req.body;
+  const { id } = req.params;
+
+  try {
+    const changedFavorite = await Contact.findByIdAndUpdate(
+      id,
+      { favorite },
+      { new: true }
+    );
+
+    if (changedFavorite === null) {
+      throw HttpError(404);
+    }
+
+    res.status(200).send(changedFavorite);
   } catch (error) {
     next(error);
   }

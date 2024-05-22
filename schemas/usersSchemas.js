@@ -23,3 +23,5 @@ const userSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
+
+export default mongoose.model("User", userSchema);

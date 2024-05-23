@@ -1,5 +1,5 @@
 import Joi from "joi";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const contactSchema = new mongoose.Schema(
   {

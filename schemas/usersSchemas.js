@@ -1,3 +1,4 @@
+import Joi from "joi";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -23,5 +24,16 @@ const userSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
+
+export const registerSchema = Joi.object({
+  password: Joi.string().min(6).required(),
+  email: Joi.string().email().required(),
+  subscription: Joi.string(),
+});
+
+export const loginSchema = Joi.object({
+  password: Joi.string().min(6).required(),
+  email: Joi.string().email().required(),
+});
 
 export default mongoose.model("User", userSchema);

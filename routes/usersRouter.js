@@ -1,9 +1,17 @@
 import express from "express";
-import { registerUser, loginUser } from "../controllers/usersControllers.js";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+} from "../controllers/usersControllers.js";
+import { validateToken } from "../helpers/validateBody.js";
+import { loginSchema, registerSchema } from "../schemas/usersSchemas.js";
+import authCheck from "../auth.js";
 
 const usersRouter = express.Router();
 
-usersRouter.post("/register", registerUser);
-usersRouter.post("/login", loginUser);
+usersRouter.post("/register", validateToken(registerSchema), registerUser);
+usersRouter.post("/login", validateToken(loginSchema), loginUser);
+usersRouter.post("/logout", authCheck, logoutUser);
 
 export default usersRouter;

@@ -18,7 +18,7 @@ export const registerUser = async (req, res, next) => {
 
     res.status(201).json({
       user: {
-        email: "example@example.com",
+        email,
         subscription: "starter",
       },
     });
@@ -47,6 +47,8 @@ export const loginUser = async (req, res, next) => {
       expiresIn: "2 days",
     });
 
+    await User.findByIdAndUpdate(existUser._id, { token });
+
     res.status(200).json({
       token,
       user: {
@@ -54,6 +56,24 @@ export const loginUser = async (req, res, next) => {
         subscription: "starter",
       },
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const logoutUser = async (req, res, next) => {
+  try {
+    const existUser = await User.findByIdAndUpdate(req.user.id, {
+      token: null,
+    });
+
+    if (existUser === null) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    res.status(204).end();
   } catch (err) {
     next(err);
   }

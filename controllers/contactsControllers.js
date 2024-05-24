@@ -2,7 +2,7 @@ import HttpError from "../helpers/HttpError.js";
 import Contact from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res) => {
-  const allContacts = await Contact.find();
+  const allContacts = await Contact.find({ owner: req.user.id });
 
   res.status(200).send(allContacts);
 };
@@ -12,7 +12,10 @@ export const getOneContact = async (req, res, next) => {
   try {
     const definiteContact = await Contact.findById(id);
 
-    if (definiteContact === null) {
+    if (
+      definiteContact === null ||
+      definiteContact.owner.id.toString() !== req.user.id
+    ) {
       throw HttpError(404);
     }
 
@@ -27,7 +30,10 @@ export const deleteContact = async (req, res, next) => {
   try {
     const deletedContact = await Contact.findByIdAndDelete(id);
 
-    if (deletedContact === null) {
+    if (
+      deletedContact === null ||
+      deletedContact.owner.id.toString() !== req.user.id
+    ) {
       throw HttpError(404);
     }
 
@@ -46,6 +52,7 @@ export const createContact = async (req, res, next) => {
       email,
       phone,
       favorite,
+      owner: req.user.id,
     });
 
     res.status(201).send(addNewContact);
@@ -76,7 +83,10 @@ export const changeContact = async (req, res, next) => {
       { new: true }
     );
 
-    if (updatedContact === null) {
+    if (
+      updatedContact === null ||
+      updatedContact.owner.id.toString() !== req.user.id
+    ) {
       throw HttpError(404);
     }
 
@@ -97,7 +107,10 @@ export const updateStatusContact = async (req, res, next) => {
       { new: true }
     );
 
-    if (changedFavorite === null) {
+    if (
+      changedFavorite === null ||
+      changedFavorite.owner.id.toString() !== req.user.id
+    ) {
       throw HttpError(404);
     }
 

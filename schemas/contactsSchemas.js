@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi, { required } from "joi";
 import mongoose, { Schema } from "mongoose";
 
 const contactSchema = new mongoose.Schema(

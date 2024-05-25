@@ -17,7 +17,7 @@ export const registerUser = async (req, res, next) => {
 
     await User.create({ password: hashPassword, email });
 
-    res.status(201).json(existUser);
+    res.status(201).json(req.body);
   } catch (err) {
     next(err);
   }

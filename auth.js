@@ -1,12 +1,17 @@
 import jwt from "jsonwebtoken";
-import User from "../schemas/usersSchemas.js";
+import User from "./schemas/usersSchemas.js";
 import HttpError from "./helpers/HttpError.js";
 
 function authCheck(req, res, next) {
   const authorizationHeader = req.headers.authorization;
+
+  if (!authorizationHeader) {
+    throw HttpError(401);
+  }
+
   const [bearer, token] = authorizationHeader.split(" ", 2);
 
-  if (!authorizationHeader || bearer !== "Bearer") {
+  if (bearer !== "Bearer") {
     throw HttpError(401);
   }
 

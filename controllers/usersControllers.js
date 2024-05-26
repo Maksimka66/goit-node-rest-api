@@ -78,14 +78,18 @@ export const logoutUser = async (req, res, next) => {
 
 export const getUserByToken = async (req, res, next) => {
   try {
-    const { id } = req.user.id;
+    const id = req.user.id;
     const existUser = await User.findById(id);
+    console.log(existUser);
 
     if (existUser === null) {
       throw HttpError(401);
     }
 
-    res.status(200).json(existUser);
+    res.status(200).json({
+      email: existUser.email,
+      subscription: existUser.subscription,
+    });
   } catch (err) {
     next(err);
   }

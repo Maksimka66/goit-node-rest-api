@@ -1,4 +1,5 @@
 import HttpError from "../helpers/HttpError.js";
+import contactsRouter from "../routes/contactsRouter.js";
 import Contact from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {
@@ -9,7 +10,14 @@ export const getAllContacts = async (req, res, next) => {
       throw HttpError(401);
     }
 
-    res.status(200).send(allContacts);
+    const contactsWithoutToken = allContacts.map((contact) => ({
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone,
+      favorite: contact.favorite,
+    }));
+
+    res.status(200).send(contactsWithoutToken);
   } catch (err) {
     next(err);
   }
@@ -23,10 +31,7 @@ export const getOneContact = async (req, res, next) => {
       owner: req.user.id,
     });
 
-    if (
-      definiteContact === null ||
-      definiteContact.owner.id.toString() !== req.user.id
-    ) {
+    if (definiteContact === null) {
       throw HttpError(404);
     }
 
@@ -49,10 +54,7 @@ export const deleteContact = async (req, res, next) => {
       owner: req.user.id,
     });
 
-    if (
-      deletedContact === null ||
-      deletedContact.owner.id.toString() !== req.user.id
-    ) {
+    if (deletedContact === null) {
       throw HttpError(404);
     }
 
@@ -115,10 +117,7 @@ export const changeContact = async (req, res, next) => {
       { new: true }
     );
 
-    if (
-      updatedContact === null ||
-      updatedContact.owner.id.toString() !== req.user.id
-    ) {
+    if (updatedContact === null) {
       throw HttpError(404);
     }
 
@@ -147,10 +146,7 @@ export const updateStatusContact = async (req, res, next) => {
       { new: true }
     );
 
-    if (
-      changedFavorite === null ||
-      changedFavorite.owner.id.toString() !== req.user.id
-    ) {
+    if (changedFavorite === null) {
       throw HttpError(404);
     }
 

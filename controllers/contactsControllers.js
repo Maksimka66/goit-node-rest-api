@@ -1,5 +1,4 @@
 import HttpError from "../helpers/HttpError.js";
-import contactsRouter from "../routes/contactsRouter.js";
 import Contact from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {

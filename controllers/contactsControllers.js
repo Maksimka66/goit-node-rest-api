@@ -30,7 +30,12 @@ export const getOneContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).json(definiteContact);
+    res.status(200).json({
+      name: definiteContact.name,
+      email: definiteContact.email,
+      phone: definiteContact.phone,
+      favorite: definiteContact.favorite,
+    });
   } catch (error) {
     next(error);
   }
@@ -51,7 +56,12 @@ export const deleteContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).json(deletedContact);
+    res.status(200).json({
+      name: deletedContact.name,
+      email: deletedContact.email,
+      phone: deletedContact.phone,
+      favorite: deletedContact.favorite,
+    });
   } catch (error) {
     next(error);
   }
@@ -69,7 +79,12 @@ export const createContact = async (req, res, next) => {
       owner: req.user.id,
     });
 
-    res.status(201).send(addNewContact);
+    res.status(201).send({
+      name: addNewContact.name,
+      email: addNewContact.email,
+      phone: addNewContact.phone,
+      favorite: addNewContact.favorite,
+    });
   } catch (error) {
     next(error);
   }
@@ -107,7 +122,12 @@ export const changeContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).send(updatedContact);
+    res.status(200).send({
+      name: updatedContact.name,
+      email: updatedContact.email,
+      phone: updatedContact.phone,
+      favorite: updatedContact.favorite,
+    });
   } catch (error) {
     next(error);
   }
@@ -134,7 +154,12 @@ export const updateStatusContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).send(changedFavorite);
+    res.status(200).send({
+      name: changedFavorite.name,
+      email: changedFavorite.email,
+      phone: changedFavorite.phone,
+      favorite: changedFavorite.favorite,
+    });
   } catch (error) {
     next(error);
   }

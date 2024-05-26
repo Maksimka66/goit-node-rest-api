@@ -18,7 +18,10 @@ export const getAllContacts = async (req, res, next) => {
 export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const definiteContact = await Contact.findById(id);
+    const definiteContact = await Contact.findOne({
+      _id: id,
+      owner: req.user.id,
+    });
 
     if (
       definiteContact === null ||
@@ -36,13 +39,17 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const user = await Contact.findById(id);
+    const deletedContact = await Contact.findOneAndDelete({
+      _id: id,
+      owner: req.user.id,
+    });
 
-    if (user === null || user.owner.id.toString() !== req.user.id) {
+    if (
+      deletedContact === null ||
+      deletedContact.owner.id.toString() !== req.user.id
+    ) {
       throw HttpError(404);
     }
-
-    const deletedContact = await Contact.findByIdAndDelete(id);
 
     res.status(200).json(deletedContact);
   } catch (error) {
@@ -79,14 +86,11 @@ export const changeContact = async (req, res, next) => {
       });
     }
 
-    const user = await Contact.findById(id);
-
-    if (user === null || user.owner.id.toString() !== req.user.id) {
-      throw HttpError(404);
-    }
-
-    const updatedContact = await Contact.findByIdAndUpdate(
-      id,
+    const updatedContact = await Contact.findOneAndUpdate(
+      {
+        _id: id,
+        owner: req.user.id,
+      },
       {
         name,
         email,
@@ -95,6 +99,13 @@ export const changeContact = async (req, res, next) => {
       },
       { new: true }
     );
+
+    if (
+      updatedContact === null ||
+      updatedContact.owner.id.toString() !== req.user.id
+    ) {
+      throw HttpError(404);
+    }
 
     res.status(200).send(updatedContact);
   } catch (error) {
@@ -107,17 +118,21 @@ export const updateStatusContact = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const user = await Contact.findById(id);
-
-    if (user === null || user.owner.id.toString() !== req.user.id) {
-      throw HttpError(404);
-    }
-
-    const changedFavorite = await Contact.findByIdAndUpdate(
-      id,
+    const changedFavorite = await Contact.findOneAndUpdate(
+      {
+        _id: id,
+        owner: req.user.id,
+      },
       { favorite },
       { new: true }
     );
+
+    if (
+      changedFavorite === null ||
+      changedFavorite.owner.id.toString() !== req.user.id
+    ) {
+      throw HttpError(404);
+    }
 
     res.status(200).send(changedFavorite);
   } catch (error) {

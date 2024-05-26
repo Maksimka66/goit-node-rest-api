@@ -1,10 +1,18 @@
 import HttpError from "../helpers/HttpError.js";
 import Contact from "../schemas/contactsSchemas.js";
 
-export const getAllContacts = async (req, res) => {
-  const allContacts = await Contact.find({ owner: req.user.id });
+export const getAllContacts = async (req, res, next) => {
+  try {
+    const allContacts = await Contact.find({ owner: req.user.id });
 
-  res.status(200).send(allContacts);
+    if (allContacts === null) {
+      throw HttpError(401);
+    }
+
+    res.status(200).send(allContacts);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const getOneContact = async (req, res, next) => {

@@ -17,7 +17,12 @@ export const registerUser = async (req, res, next) => {
 
     await User.create({ password: hashPassword, email });
 
-    res.status(201).json(req.body);
+    res.status(201).json({
+      user: {
+        email,
+        subscription: "starter",
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -39,13 +44,17 @@ export const loginUser = async (req, res, next) => {
       return res.status(401).json({ message: "Email or password is wrong" });
     }
 
-    const token = jwt.sign(existUser, process.env.JWT_SECRET, {
-      expiresIn: "2 days",
-    });
+    const token = jwt.sign(
+      { id: existUser._id, name: existUser.name },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2 days",
+      }
+    );
 
     await User.findByIdAndUpdate(existUser._id, { token });
 
-    res.status(200).json(existUser);
+    res.status(200).json({ token, user: { email, subscription: "starter" } });
   } catch (err) {
     next(err);
   }

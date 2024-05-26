@@ -14,6 +14,7 @@ export const getAllContacts = async (req, res, next) => {
       email: contact.email,
       phone: contact.phone,
       favorite: contact.favorite,
+      id: contact._id,
     }));
 
     res.status(200).send(contactsWithoutToken);
@@ -39,6 +40,7 @@ export const getOneContact = async (req, res, next) => {
       email: definiteContact.email,
       phone: definiteContact.phone,
       favorite: definiteContact.favorite,
+      id: definiteContact._id,
     });
   } catch (error) {
     next(error);
@@ -62,6 +64,7 @@ export const deleteContact = async (req, res, next) => {
       email: deletedContact.email,
       phone: deletedContact.phone,
       favorite: deletedContact.favorite,
+      id: deletedContact._id,
     });
   } catch (error) {
     next(error);
@@ -85,6 +88,7 @@ export const createContact = async (req, res, next) => {
       email: addNewContact.email,
       phone: addNewContact.phone,
       favorite: addNewContact.favorite,
+      id: addNewContact._id,
     });
   } catch (error) {
     next(error);
@@ -125,6 +129,7 @@ export const changeContact = async (req, res, next) => {
       email: updatedContact.email,
       phone: updatedContact.phone,
       favorite: updatedContact.favorite,
+      id: updatedContact._id,
     });
   } catch (error) {
     next(error);
@@ -154,6 +159,7 @@ export const updateStatusContact = async (req, res, next) => {
       email: changedFavorite.email,
       phone: changedFavorite.phone,
       favorite: changedFavorite.favorite,
+      id: changedFavorite._id,
     });
   } catch (error) {
     next(error);

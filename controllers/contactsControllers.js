@@ -1,22 +1,47 @@
 import HttpError from "../helpers/HttpError.js";
 import Contact from "../schemas/contactsSchemas.js";
 
-export const getAllContacts = async (req, res) => {
-  const allContacts = await Contact.find();
+export const getAllContacts = async (req, res, next) => {
+  try {
+    const allContacts = await Contact.find({ owner: req.user.id });
 
-  res.status(200).send(allContacts);
+    if (allContacts === null) {
+      throw HttpError(401);
+    }
+
+    const contactsWithoutToken = allContacts.map((contact) => ({
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone,
+      favorite: contact.favorite,
+      id: contact._id,
+    }));
+
+    res.status(200).send(contactsWithoutToken);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const definiteContact = await Contact.findById(id);
+    const definiteContact = await Contact.findOne({
+      _id: id,
+      owner: req.user.id,
+    });
 
     if (definiteContact === null) {
       throw HttpError(404);
     }
 
-    res.status(200).json(definiteContact);
+    res.status(200).json({
+      name: definiteContact.name,
+      email: definiteContact.email,
+      phone: definiteContact.phone,
+      favorite: definiteContact.favorite,
+      id: definiteContact._id,
+    });
   } catch (error) {
     next(error);
   }
@@ -25,13 +50,22 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const deletedContact = await Contact.findByIdAndDelete(id);
+    const deletedContact = await Contact.findOneAndDelete({
+      _id: id,
+      owner: req.user.id,
+    });
 
     if (deletedContact === null) {
       throw HttpError(404);
     }
 
-    res.status(200).json(deletedContact);
+    res.status(200).json({
+      name: deletedContact.name,
+      email: deletedContact.email,
+      phone: deletedContact.phone,
+      favorite: deletedContact.favorite,
+      id: deletedContact._id,
+    });
   } catch (error) {
     next(error);
   }
@@ -46,9 +80,16 @@ export const createContact = async (req, res, next) => {
       email,
       phone,
       favorite,
+      owner: req.user.id,
     });
 
-    res.status(201).send(addNewContact);
+    res.status(201).send({
+      name: addNewContact.name,
+      email: addNewContact.email,
+      phone: addNewContact.phone,
+      favorite: addNewContact.favorite,
+      id: addNewContact._id,
+    });
   } catch (error) {
     next(error);
   }
@@ -65,8 +106,11 @@ export const changeContact = async (req, res, next) => {
       });
     }
 
-    const updatedContact = await Contact.findByIdAndUpdate(
-      id,
+    const updatedContact = await Contact.findOneAndUpdate(
+      {
+        _id: id,
+        owner: req.user.id,
+      },
       {
         name,
         email,
@@ -80,7 +124,13 @@ export const changeContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).send(updatedContact);
+    res.status(200).send({
+      name: updatedContact.name,
+      email: updatedContact.email,
+      phone: updatedContact.phone,
+      favorite: updatedContact.favorite,
+      id: updatedContact._id,
+    });
   } catch (error) {
     next(error);
   }
@@ -91,8 +141,11 @@ export const updateStatusContact = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const changedFavorite = await Contact.findByIdAndUpdate(
-      id,
+    const changedFavorite = await Contact.findOneAndUpdate(
+      {
+        _id: id,
+        owner: req.user.id,
+      },
       { favorite },
       { new: true }
     );
@@ -101,7 +154,13 @@ export const updateStatusContact = async (req, res, next) => {
       throw HttpError(404);
     }
 
-    res.status(200).send(changedFavorite);
+    res.status(200).send({
+      name: changedFavorite.name,
+      email: changedFavorite.email,
+      phone: changedFavorite.phone,
+      favorite: changedFavorite.favorite,
+      id: changedFavorite._id,
+    });
   } catch (error) {
     next(error);
   }

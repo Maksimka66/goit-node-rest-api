@@ -94,3 +94,7 @@ export const getUserByToken = async (req, res, next) => {
     next(err);
   }
 };
+
+export const userAvatar = async (req, res, next) => {
+  res.send();
+};

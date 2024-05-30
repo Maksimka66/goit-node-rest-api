@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "./schemas/usersSchemas.js";
-import HttpError from "./helpers/HttpError.js";
+import User from "../schemas/usersSchemas.js";
+import HttpError from "../helpers/HttpError.js";
 
 function authCheck(req, res, next) {
   const authorizationHeader = req.headers.authorization;

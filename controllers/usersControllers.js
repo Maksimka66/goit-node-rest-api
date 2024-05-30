@@ -4,6 +4,7 @@ import path from "node:path";
 import User from "../schemas/usersSchemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
 import HttpError from "../helpers/HttpError.js";
 
 export const registerUser = async (req, res, next) => {
@@ -18,7 +19,14 @@ export const registerUser = async (req, res, next) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    await User.create({ password: hashPassword, email });
+    const userAvatar = gravatar.url(email, {}, false);
+
+    const user = await User.create({
+      password: hashPassword,
+      email,
+    });
+
+    user.avatarURL = userAvatar;
 
     res.status(201).json({
       user: {
@@ -114,7 +122,7 @@ export const userAvatar = async (req, res, next) => {
       throw HttpError(401);
     }
 
-    res.status(200).json({ avatarURL: "тут буде посилання на зображення" });
+    res.status(200).json({ avatarURL: user.avatar });
   } catch (err) {
     next(next);
   }

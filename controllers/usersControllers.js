@@ -24,6 +24,7 @@ export const registerUser = async (req, res, next) => {
     const user = await User.create({
       password: hashPassword,
       email,
+      avatarURL: userAvatar,
     });
 
     user.avatarURL = userAvatar;
@@ -114,15 +115,17 @@ export const userAvatar = async (req, res, next) => {
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { avatar: req.file.filename },
+      { avatarURL: req.file.filename },
       { new: true }
     );
+
+    console.log(user);
 
     if (user === null) {
       throw HttpError(401);
     }
 
-    res.status(200).json({ avatarURL: user.avatar });
+    res.status(200).json({ avatarURL: user.avatarURL });
   } catch (err) {
     next(next);
   }

@@ -6,7 +6,7 @@ import "./db/db.js";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import usersRouter from "./routes/usersRouter.js";
-import authCheck from "./auth.js";
+import authCheck from "./middleware/auth.js";
 
 const app = express();
 

@@ -5,7 +5,7 @@ import User from "../schemas/usersSchemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
-import jimp from "jimp";
+import Jimp from "jimp";
 import HttpError from "../helpers/HttpError.js";
 
 export const registerUser = async (req, res, next) => {
@@ -22,10 +22,18 @@ export const registerUser = async (req, res, next) => {
 
     const userAvatar = gravatar.url(email, {}, false);
 
+    const resizeAvatar = await Jimp.read(userAvatar)
+      .then((ava) => {
+        return ava.resize(250, 250);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     await User.create({
       password: hashPassword,
       email,
-      avatarURL: userAvatar,
+      avatarURL: resizeAvatar,
     });
 
     res.status(201).json({
@@ -117,8 +125,6 @@ export const userAvatar = async (req, res, next) => {
       { avatarURL: req.file.filename },
       { new: true }
     );
-
-    console.log(user);
 
     if (user === null) {
       throw HttpError(401);

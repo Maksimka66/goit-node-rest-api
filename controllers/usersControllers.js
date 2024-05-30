@@ -1,3 +1,6 @@
+import * as fs from "node:fs/promises";
+import path from "node:path";
+
 import User from "../schemas/usersSchemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -80,7 +83,6 @@ export const getUserByToken = async (req, res, next) => {
   try {
     const id = req.user.id;
     const existUser = await User.findById(id);
-    console.log(existUser);
 
     if (existUser === null) {
       throw HttpError(401);
@@ -96,5 +98,24 @@ export const getUserByToken = async (req, res, next) => {
 };
 
 export const userAvatar = async (req, res, next) => {
-  res.send();
+  try {
+    await fs.rename(
+      req.file.path,
+      path.resolve("public/avatars", req.file.filename)
+    );
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatar: req.file.filename },
+      { new: true }
+    );
+
+    if (user === null) {
+      throw HttpError(401);
+    }
+
+    res.status(200).json({ avatarURL: "тут буде посилання на зображення" });
+  } catch (err) {
+    next(next);
+  }
 };

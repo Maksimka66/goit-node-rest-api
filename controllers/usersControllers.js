@@ -120,6 +120,10 @@ export const userAvatar = async (req, res, next) => {
       path.resolve("public/avatars", req.file.filename)
     );
 
+    if (!req.file) {
+      throw HttpError(404);
+    }
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { avatarURL: req.file.filename },
@@ -130,7 +134,7 @@ export const userAvatar = async (req, res, next) => {
       throw HttpError(401);
     }
 
-    res.status(200).json({ avatarURL: user.avatarURL });
+    res.status(200).json({ avatarURL: `/avatars/${user.avatarURL}` });
   } catch (err) {
     next(next);
   }

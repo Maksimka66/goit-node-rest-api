@@ -2,7 +2,7 @@ import { loginUser } from "./usersControllers.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../schemas/usersSchemas.js";
-import jest from "@jest/globals";
+import { jest } from "@jest/globals";
 
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");

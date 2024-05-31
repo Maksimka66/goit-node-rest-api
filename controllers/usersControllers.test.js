@@ -1,60 +1,24 @@
-import { loginUser } from "./usersControllers.js";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import User from "../schemas/usersSchemas.js";
+import app from "../app.js";
 import { jest } from "@jest/globals";
+import supertest from "supertest";
 
-jest.mock("bcrypt");
-jest.mock("jsonwebtoken");
+jest.mock("../schemas/usersSchemas.js");
 
 describe("loginUser tests", () => {
-  let req, res, next, existUser;
+  test("should return status code 200, token, and user object with email and subscription fields", async () => {
+    const data = await supertest(app).post("/users/login").send({
+      email: "phil@gmail.com",
+      password: "52346728",
+    });
 
-  beforeEach(() => {
-    req = { body: { email: "test@example.com", password: "password" } };
-    res = {
-      json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    };
-    next = jest.fn();
-    existUser = {
-      _id: "user_id",
-      email: "test@example.com",
-      password: "hashed_password",
-      name: "Test User",
-      save: jest.fn(),
-    };
+    console.log(data);
 
-    User.findOne = jest.fn().mockResolvedValue(existUser);
-    User.findByIdAndUpdate = jest.fn();
-    bcrypt.compare = jest.fn().mockResolvedValue(true);
-    jwt.sign = jest.fn().mockReturnValue("token");
-  });
-
-  test("response status must be 200", async () => {
-    await loginUser(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-  });
-
-  test("response must return token", async () => {
-    await loginUser(req, res, next);
-
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ token: "token" })
-    );
-  });
-
-  test("response must return user", async () => {
-    await loginUser(req, res, next);
-
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        user: {
-          email: "test@example.com",
-          subscription: "starter",
-        },
-      })
-    );
+    expect(data.status).toBe(200);
+    expect(data.body).toHaveProperty("token");
+    expect(data.body.user).toBeDefined();
+    expect(data.body.user.email).toBe("phil@gmail.com");
+    expect(typeof data.body.user.email).toBe("string");
+    expect(data.body.user.subscription).toBe("starter");
+    expect(typeof data.body.user.subscription).toBe("string");
   });
 });

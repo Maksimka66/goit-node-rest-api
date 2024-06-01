@@ -106,26 +106,21 @@ export const getUserByToken = async (req, res, next) => {
 };
 
 export const userAvatar = async (req, res, next) => {
+  if (!req.file) {
+    throw HttpError(400, "The picture is not exist");
+  }
+
   try {
-    const { id, avatarURL: oldAvatarURL } = req.user;
     const { path: tempUpload, originalname } = req.file;
 
-    const resizeAvatar = await Jimp.read()
-      .then((ava) => {
-        return ava.resize(250, 250);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const avatar = await Jimp.read(tempUpload);
+
+    await avatar.resize(250, 250).write(tempUpload);
 
     await fs.rename(
-      req.file.path,
+      tempUpload,
       path.resolve("public/avatars", req.file.filename)
     );
-
-    if (!req.file) {
-      throw HttpError(400);
-    }
 
     const user = await User.findByIdAndUpdate(
       req.user.id,

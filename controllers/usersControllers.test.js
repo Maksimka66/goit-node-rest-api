@@ -1,8 +1,5 @@
 import { app } from "../app.js";
-import { jest } from "@jest/globals";
 import supertest from "supertest";
-
-jest.mock("../schemas/usersSchemas.js");
 
 describe("loginUser tests", () => {
   test("should return status code 200, token, and user object with email and subscription fields", async () => {

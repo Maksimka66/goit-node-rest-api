@@ -22,18 +22,10 @@ export const registerUser = async (req, res, next) => {
 
     const userAvatar = gravatar.url(email, {}, false);
 
-    const resizeAvatar = await Jimp.read(userAvatar)
-      .then((ava) => {
-        return ava.resize(250, 250);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
     await User.create({
       password: hashPassword,
       email,
-      avatarURL: resizeAvatar,
+      avatarURL: userAvatar,
     });
 
     res.status(201).json({
@@ -115,6 +107,17 @@ export const getUserByToken = async (req, res, next) => {
 
 export const userAvatar = async (req, res, next) => {
   try {
+    const { id, avatarURL: oldAvatarURL } = req.user;
+    const { path: tempUpload, originalname } = req.file;
+
+    const resizeAvatar = await Jimp.read()
+      .then((ava) => {
+        return ava.resize(250, 250);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     await fs.rename(
       req.file.path,
       path.resolve("public/avatars", req.file.filename)

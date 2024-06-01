@@ -121,7 +121,7 @@ export const userAvatar = async (req, res, next) => {
     );
 
     if (!req.file) {
-      throw HttpError(404);
+      throw HttpError(400);
     }
 
     const user = await User.findByIdAndUpdate(

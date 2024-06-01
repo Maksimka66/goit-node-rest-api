@@ -111,7 +111,7 @@ export const userAvatar = async (req, res, next) => {
   }
 
   try {
-    const { path: tempUpload, originalname } = req.file;
+    const { path: tempUpload } = req.file;
 
     const avatar = await Jimp.read(tempUpload);
 

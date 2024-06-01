@@ -111,16 +111,18 @@ export const userAvatar = async (req, res, next) => {
   }
 
   try {
-    const { path: tempUpload } = req.file;
+    const oldPath = req.file.path;
 
-    const avatar = await Jimp.read(tempUpload);
+    console.log(oldPath);
+    console.log(req.file.filename);
 
-    await avatar.resize(250, 250).write(tempUpload);
+    const avatar = await Jimp.read(oldPath);
 
-    await fs.rename(
-      tempUpload,
-      path.resolve("public/avatars", req.file.filename)
-    );
+    await avatar.resize(250, 250).write(oldPath);
+
+    await fs.rename(oldPath, path.resolve("public/avatars", req.file.filename));
+
+    // await fs.unlink(req.file.path);
 
     const user = await User.findByIdAndUpdate(
       req.user.id,

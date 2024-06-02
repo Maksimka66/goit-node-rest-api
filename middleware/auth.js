@@ -19,6 +19,7 @@ function authCheck(req, res, next) {
     if (err) {
       return next(HttpError(401));
     }
+
     try {
       const definiteUser = await User.findById(decode.id);
 

@@ -22,7 +22,7 @@ usersRouter.post("/logout", authCheck, logoutUser);
 usersRouter.get("/current", authCheck, getUserByToken);
 usersRouter.patch(
   "/avatars",
-  // uploadMiddleware.single("avatar"),
+  uploadMiddleware.single("avatar"),
   authCheck,
   userAvatar
 );

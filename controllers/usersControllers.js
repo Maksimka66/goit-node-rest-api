@@ -1,6 +1,11 @@
+import * as fs from "node:fs/promises";
+import path from "node:path";
+
 import User from "../schemas/usersSchemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 import HttpError from "../helpers/HttpError.js";
 
 export const registerUser = async (req, res, next) => {
@@ -15,7 +20,13 @@ export const registerUser = async (req, res, next) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    await User.create({ password: hashPassword, email });
+    const userAvatar = gravatar.url(email, {}, false);
+
+    await User.create({
+      password: hashPassword,
+      email,
+      avatarURL: userAvatar,
+    });
 
     res.status(201).json({
       user: {
@@ -80,7 +91,6 @@ export const getUserByToken = async (req, res, next) => {
   try {
     const id = req.user.id;
     const existUser = await User.findById(id);
-    console.log(existUser);
 
     if (existUser === null) {
       throw HttpError(401);
@@ -96,5 +106,33 @@ export const getUserByToken = async (req, res, next) => {
 };
 
 export const userAvatar = async (req, res, next) => {
-  res.send();
+  try {
+    if (!req.file) {
+      throw HttpError(400, "The picture is not exist");
+    }
+
+    const oldPath = req.file.path;
+
+    const avatar = await Jimp.read(oldPath);
+
+    await avatar.resize(250, 250).write(oldPath);
+
+    await fs.rename(oldPath, path.resolve("public/avatars", req.file.filename));
+
+    const avatarURL = path.join("avatars", req.file.filename);
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatarURL },
+      { new: true }
+    );
+
+    if (user === null) {
+      throw HttpError(401);
+    }
+
+    res.status(200).json({ avatarURL });
+  } catch (err) {
+    next(err);
+  }
 };

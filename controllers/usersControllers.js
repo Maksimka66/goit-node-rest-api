@@ -115,14 +115,15 @@ export const userAvatar = async (req, res, next) => {
 
     console.log(oldPath);
     console.log(req.file.filename);
+    console.log(req.file);
 
     const avatar = await Jimp.read(oldPath);
 
     await avatar.resize(250, 250).write(oldPath);
 
-    await fs.rename(oldPath, path.resolve("public/avatars", req.file.filename));
+    await fs.unlink(oldPath);
 
-    // await fs.unlink(req.file.path);
+    await fs.rename(oldPath, path.resolve("public/avatars", req.file.filename));
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
@@ -136,6 +137,6 @@ export const userAvatar = async (req, res, next) => {
 
     res.status(200).json({ avatarURL: `/avatars/${user.avatarURL}` });
   } catch (err) {
-    next(next);
+    next(err);
   }
 };

@@ -113,21 +113,17 @@ export const userAvatar = async (req, res, next) => {
   try {
     const oldPath = req.file.path;
 
-    console.log(oldPath);
-    console.log(req.file.filename);
-    console.log(req.file);
-
     const avatar = await Jimp.read(oldPath);
 
     await avatar.resize(250, 250).write(oldPath);
 
-    await fs.unlink(oldPath);
-
     await fs.rename(oldPath, path.resolve("public/avatars", req.file.filename));
+
+    const avatarURL = path.join("avatars", req.file.filename);
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { avatarURL: req.file.filename },
+      { avatarURL },
       { new: true }
     );
 
@@ -135,7 +131,7 @@ export const userAvatar = async (req, res, next) => {
       throw HttpError(401);
     }
 
-    res.status(200).json({ avatarURL: `/avatars/${user.avatarURL}` });
+    res.status(200).json({ avatarURL });
   } catch (err) {
     next(err);
   }

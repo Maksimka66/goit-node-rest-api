@@ -106,11 +106,11 @@ export const getUserByToken = async (req, res, next) => {
 };
 
 export const userAvatar = async (req, res, next) => {
-  if (!req.file) {
-    throw HttpError(400, "The picture is not exist");
-  }
-
   try {
+    if (!req.file) {
+      throw HttpError(400, "The picture is not exist");
+    }
+
     const oldPath = req.file.path;
 
     const avatar = await Jimp.read(oldPath);

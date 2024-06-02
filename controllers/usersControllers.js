@@ -1,11 +1,13 @@
 import * as fs from "node:fs/promises";
 import path from "node:path";
-
-import User from "../schemas/usersSchemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
 import Jimp from "jimp";
+import nodemailer from "nodemailer";
+import { nanoid } from "nanoid";
+
+import User from "../schemas/usersSchemas.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const registerUser = async (req, res, next) => {
@@ -22,10 +24,13 @@ export const registerUser = async (req, res, next) => {
 
     const userAvatar = gravatar.url(email, {}, false);
 
+    const verificationToken = nanoid();
+
     await User.create({
       password: hashPassword,
-      email,
       avatarURL: userAvatar,
+      email,
+      verificationToken,
     });
 
     res.status(201).json({
@@ -135,4 +140,11 @@ export const userAvatar = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+export const userEmail = async (req, res, next) => {
+  const transport = nodemailer.createTransport({
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+  });
 };

@@ -6,6 +6,7 @@ import {
   logoutUser,
   getUserByToken,
   userAvatar,
+  userEmail,
 } from "../controllers/usersControllers.js";
 
 import { validateBody } from "../helpers/validateBody.js";
@@ -26,5 +27,6 @@ usersRouter.patch(
   authCheck,
   userAvatar
 );
+usersRouter.get("/verify/:verificationToken", userEmail);
 
 export default usersRouter;

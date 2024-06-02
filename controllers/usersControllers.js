@@ -62,7 +62,7 @@ export const loginUser = async (req, res, next) => {
     const existUser = await User.findOne({ email });
 
     if (existUser === null) {
-      throw HttpError(401);
+      throw HttpError(401, "Email or password is wrong");
     }
 
     if (existUser.verify === false) {
@@ -72,7 +72,7 @@ export const loginUser = async (req, res, next) => {
     const isMatch = await bcrypt.compare(password, existUser.password);
 
     if (isMatch === false) {
-      throw HttpError(401);
+      throw HttpError(401, "Email or password is wrong");
     }
 
     const token = jwt.sign(

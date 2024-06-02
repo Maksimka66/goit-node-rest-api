@@ -6,11 +6,16 @@ import {
   logoutUser,
   getUserByToken,
   userAvatar,
-  userEmail,
+  verifyUser,
+  resendVerifyEmail,
 } from "../controllers/usersControllers.js";
 
 import { validateBody } from "../helpers/validateBody.js";
-import { loginSchema, registerSchema } from "../schemas/usersSchemas.js";
+import {
+  loginSchema,
+  mailSchema,
+  registerSchema,
+} from "../schemas/usersSchemas.js";
 
 import authCheck from "../middleware/auth.js";
 import uploadMiddleware from "../middleware/upload.js";
@@ -27,6 +32,7 @@ usersRouter.patch(
   authCheck,
   userAvatar
 );
-usersRouter.get("/verify/:verificationToken", userEmail);
+usersRouter.get("/verify/:verificationToken", verifyUser);
+usersRouter.post("/verify", validateBody(mailSchema), resendVerifyEmail);
 
 export default usersRouter;

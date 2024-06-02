@@ -45,4 +45,11 @@ export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
+export const mailSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({ "any.required": "missing required field email" }),
+});
+
 export default mongoose.model("User", userSchema);

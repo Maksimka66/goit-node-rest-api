@@ -29,15 +29,15 @@ contactsRouter.post("/", validateBody(createContactSchema), createContact);
 
 contactsRouter.put(
   "/:id",
-  validateBody(updateContactSchema),
   isValidId,
+  validateBody(updateContactSchema),
   changeContact
 );
 
 contactsRouter.patch(
   "/:id/favorite",
-  validateBody(changeContactSchema),
   isValidId,
+  validateBody(changeContactSchema),
   updateStatusContact
 );
 

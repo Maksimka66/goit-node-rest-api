@@ -164,7 +164,7 @@ export const verifyUser = async (req, res, next) => {
     const user = await User.findOne({ verificationToken });
 
     if (!user) {
-      throw HttpError(404);
+      throw HttpError(404, "User not found");
     }
 
     await User.findOneAndUpdate(
